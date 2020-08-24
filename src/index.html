@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        @font-face {
+            font-family: "Aleo";
+            src: url("../fonts/aleo-regular-webfont.ttf");
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "Aleo";
+            src: url("../fonts/aleo-bold-webfont.ttf");
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        button {
+            padding: 8px;
+            border-radius: 4px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: default;
+            background-image: none;
+            background-color: lightgray;
+        }
+
+        button:focus {
+            outline: 0;
+        }
+
+        #navbar, button {
+            background-image: linear-gradient(-45deg, black, #444);
+        }
+
+        * {
+            box-sizing: border-box;
+            overflow: hidden;
+            font-family: Aleo, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: grid;
+            grid-template-areas: "forms forms forms" "items items items" ". navbar .";
+            grid-template-rows: max-content 1fr max-content;
+            grid-template-columns: 1fr max-content 1fr;
+            position: relative;
+        }
+
+        .add-flashcard-form {
+            width: fit-content;
+            padding: 16px;
+        }
+
+        .add-flashcard-form > * {
+            margin: 16px 0;
+        }
+
+        .add-flashcard-form > *:last-child {
+            margin: 0;
+        }
+
+        input {
+            display: block;
+        }
+
+        textarea {
+            display: block;
+        }
+
+        #items {
+            grid-area: items;
+            overflow-y: scroll;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #items > * {
+            flex-shrink: 0;
+        }
+
+        .flashcard, .quiz-definition {
+            margin: 16px 0;
+            padding: 12px 16px;
+            box-shadow: 1px 1px 20px 1px #EEE;
+            border-radius: 8px;
+            max-width: fit-content;
+        }
+
+        .flashcard {
+            display: grid;
+            grid-template-areas: "concept . delete" "definition definition definition";
+            grid-template-rows: max-content max-content;
+            grid-template-columns: max-content 1fr max-content;
+        }
+
+        .flashcard-concept {
+            grid-area: concept;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .flashcard-definition {
+           grid-area: definition;
+        }
+
+        .flashcard-delete {
+            grid-area: delete;
+            cursor: pointer;
+        }
+
+
+        .quiz-definition {
+            transition: transform .2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .quiz-definition:hover {
+            transform: scale(1.1);
+        }
+
+
+        #navbar {
+            grid-area: navbar;
+            background-color: black;
+            display: flex;
+            justify-content: space-around;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        #navbar > * {
+            color: white;
+            margin: 0 16px;
+            padding: 16px 0;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        #forms {
+            grid-area: forms;
+            margin: 16px;
+            margin-bottom: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        #quiz-complete-dialog, #fatal-error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            place-items: center;
+        }
+
+        #quiz-complete-dialog > * {
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+<div id="main"></div>
+<script src="./index.js"></script>
+</body>
+</html>
