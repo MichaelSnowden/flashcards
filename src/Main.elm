@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Browser
 import Browser.Dom
 import Browser.Navigation
-import Html
+import Html exposing (Html)
 import Html.Attributes
 import Html.Entity
 import Html.Events
@@ -95,7 +95,7 @@ init flags _ key =
       , state = state
       , seed = Random.initialSeed 42
       , flashcardId =
-            List.foldl max 0 (List.map .id modelFlashcards)
+            List.foldl max 0 (List.map .id modelFlashcards) |> (+) 1
       }
     , Cmd.none
     )
@@ -110,25 +110,27 @@ viewFlashcard flashcard =
         ]
 
 
+viewActionBar : List (Html Msg) -> Html Msg
+viewActionBar items =
+    Html.div [ Html.Attributes.id "action-bar-container" ] [ Html.div [ Html.Attributes.id "action-bar" ] items ]
+
+
 viewFlashcardQuiz (NonEmpty question _) flashcards numCorrect numAsked =
-    [ Html.div [ Html.Attributes.id "forms" ]
-        [ Html.div []
-            [ Html.div [ Html.Attributes.style "font-size" "24px" ]
-                [ Html.text "What is the definition of ", Html.strong [] [ Html.text question.concept ], Html.text "?" ]
-            , Html.div [ Html.Attributes.class "quiz-results" ]
-                [ Html.text <| String.fromInt numCorrect
-                , Html.text "/"
-                , Html.text <| String.fromInt numAsked
-                , Html.text " correct"
-                ]
+    [ Html.div [ Html.Attributes.id "quiz-header", Html.Attributes.style "font-size" "24px" ]
+        [ Html.div [] [ Html.text "Which is the correct definition of ", Html.strong [] [ Html.text question.concept ], Html.text "?" ]
+        , Html.div [ Html.Attributes.class "quiz-results" ]
+            [ Html.text <| String.fromInt numCorrect
+            , Html.text "/"
+            , Html.text <| String.fromInt numAsked
+            , Html.text " correct"
             ]
         ]
-    , Html.div [ Html.Attributes.id "items" ] (List.map viewFlashcardQuizChoice <| NonEmpty.toList flashcards)
-    , Html.div [ Html.Attributes.id "navbar" ] [ Html.a [ Html.Events.onClick EndQuizClicked ] [ Html.text "End Quiz" ] ]
+    , Html.div [ Html.Attributes.id "choices-container" ] (List.map viewFlashcardQuizChoice <| NonEmpty.toList flashcards)
+    , viewActionBar [ Html.a [ Html.Events.onClick EndQuizClicked ] [ Html.text "End Quiz" ] ]
     ]
 
 
-viewFlashcardQuizChoice : Flashcard -> Html.Html Msg
+viewFlashcardQuizChoice : Flashcard -> Html Msg
 viewFlashcardQuizChoice flashcard =
     Html.div [ Html.Attributes.class "quiz-definition", Html.Events.onClick (DefinitionClicked flashcard) ] [ Html.text flashcard.definition ]
 
@@ -147,8 +149,8 @@ viewTakingNotes model =
             else
                 NoOp
     in
-    [ Html.div [ Html.Attributes.id "forms" ]
-        [ Html.form [ Html.Events.onSubmit AddFlashcardClicked, Html.Attributes.class "add-flashcard-form" ]
+    [ Html.div [ Html.Attributes.id "flashcard-form-container" ]
+        [ Html.form [ Html.Events.onSubmit AddFlashcardClicked, Html.Attributes.id "flashcard-form" ]
             [ Html.div [] [ Html.h1 [ Html.Attributes.style "margin" "0" ] [ Html.text "Add a Flashcard" ] ]
             , Html.div [] [ Html.text "Concept" ]
             , Html.input
@@ -165,15 +167,15 @@ viewTakingNotes model =
     ]
         ++ (case NonEmpty.fromList model.flashcards of
                 Just flashcards ->
-                    [ Html.div [ Html.Attributes.id "navbar" ]
+                    [ viewActionBar
                         [ Html.a [ Html.Events.onClick (StartQuizClicked flashcards) ] [ Html.text "Start Quiz" ]
                         , Html.a [ Html.Events.onClick ExportClicked ] [ Html.text "Export Quiz" ]
                         ]
-                    , Html.div [ Html.Attributes.id "items" ] (List.map viewFlashcard model.flashcards)
+                    , Html.div [ Html.Attributes.id "flashcards-container" ] (List.map viewFlashcard model.flashcards)
                     ]
 
                 Nothing ->
-                    [ Html.div [ Html.Attributes.id "item" ] [ Html.text "No Flashcards" ] ]
+                    [ Html.div [ Html.Attributes.id "flashcards-container" ] [ Html.text "No Flashcards" ] ]
            )
 
 
@@ -206,7 +208,7 @@ view model =
                         , Html.text " correct"
                         ]
                     ]
-                , Html.div [ Html.Attributes.id "navbar" ] [ Html.a [ Html.Events.onClick QuizCompleteOkClicked ] [ Html.text "Ok" ] ]
+                , viewActionBar [ Html.a [ Html.Events.onClick QuizCompleteOkClicked ] [ Html.text "Ok" ] ]
                 ]
     }
 
